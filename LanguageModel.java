@@ -35,11 +35,11 @@ public class LanguageModel {
 	public void train(String fileName) {
     In in = new In(fileName);
     String fullText = in.readAll(); 
-    
+
     for (int i = 0; i <= fullText.length() - windowLength - 1; i++) {
         String window = fullText.substring(i, i + windowLength);
         char nextChar = fullText.charAt(i + windowLength);
-        
+
         List probs = CharDataMap.get(window);
         if (probs == null) {
             probs = new List();
@@ -84,26 +84,25 @@ public class LanguageModel {
     }
 
     public String generate(String initialText, int textLength) {
-        if (initialText.length() < windowLength) {
-            return initialText;
-        }
-
-        StringBuilder generatedText = new StringBuilder(initialText);
-        String window = initialText.substring(initialText.length() - windowLength);
-
-        while (generatedText.length() < textLength) {
-            List probs = CharDataMap.get(window);
-            if (probs != null) {
-                char nextChar = getRandomChar(probs);
-                generatedText.append(nextChar);
-                window = generatedText.substring(generatedText.length() - windowLength);
-            } else {
-                break;
-            }
-        }
-        return generatedText.toString();
+    if (initialText.length() < windowLength) {
+        return initialText;
     }
 
+    String generatedText = initialText;
+    
+    while (generatedText.length() < textLength) {
+        String window = generatedText.substring(generatedText.length() - windowLength);
+        List probs = CharDataMap.get(window);
+
+        if (probs != null) {
+            char nextChar = getRandomChar(probs);
+            generatedText += nextChar;
+        } else {
+            break;
+        }
+    }
+    return generatedText;
+}
     public static void main(String[] args) {
         int windowLength = Integer.parseInt(args[0]); 
         String initialText = args[1]; 
