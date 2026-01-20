@@ -31,7 +31,7 @@ public class LanguageModel {
         CharDataMap = new HashMap<String, List>();
     }
 
-   public void train(String fileName) {
+  public void train(String fileName) {
         In in = new In(fileName);
         String fullText = in.readAll(); 
 
@@ -87,20 +87,21 @@ public class LanguageModel {
             return initialText;
         }
 
-        StringBuilder generatedText = new StringBuilder(initialText);
-        
-        while (generatedText.length() < textLength) {
-            String currentWindow = generatedText.substring(generatedText.length() - windowLength);
-            List probs = CharDataMap.get(currentWindow);
+        String generatedText = initialText;
+        String window = initialText.substring(initialText.length() - windowLength);
+
+        while (generatedText.length() < textLength + initialText.length()) {
+            List probs = CharDataMap.get(window);
 
             if (probs != null) {
                 char nextChar = getRandomChar(probs);
-                generatedText.append(nextChar);
+                generatedText += nextChar;
+                window = generatedText.substring(generatedText.length() - windowLength);
             } else {
-                return generatedText.toString();
+                break;
             }
         }
-        return generatedText.toString();
+        return generatedText;
     }
 
     public static void main(String[] args) {
