@@ -32,33 +32,35 @@ public class LanguageModel {
     }
 
  public void train(String fileName) {
-    In in = new In(fileName);
-    String window = "";
-    for (int i = 0; i < windowLength; i++) {
-        if (!in.isEmpty()) {
-            window += in.readChar();
+        String window = "";
+        In in = new In(fileName);
+
+        for (int i = 0; i < windowLength; i++) {
+            if (!in.isEmpty()) {
+                window += in.readChar();
+            }
+        }
+
+        while (!in.isEmpty()) {
+            char c = in.readChar(); 
+
+            List probs = CharDataMap.get(window);
+            if (probs == null) {
+                probs = new List();
+                CharDataMap.put(window, probs);
+            }
+
+            probs.update(c); 
+            
+            window = window.substring(1) + c;
+        }
+
+        for (List probs : CharDataMap.values()) {
+            calculateProbabilities(probs);
         }
     }
 
-    while (!in.isEmpty()) {
-        char c = in.readChar();
-        
-        List probs = CharDataMap.get(window);
-        if (probs == null) {
-            probs = new List();
-            CharDataMap.put(window, probs);
-        }
-        
-        probs.update(c);
-        
-        window = window.substring(1) + c;
-    }
-
-    for (List probs : CharDataMap.values()) {
-        calculateProbabilities(probs);
-    }
-}
-    void calculateProbabilities(List probs) {
+    public void calculateProbabilities(List probs) {
         int totalCount = 0;
         for (int i = 0; i < probs.getSize(); i++) {
             totalCount += probs.get(i).count;
@@ -67,27 +69,21 @@ public class LanguageModel {
         double cumulative = 0;
         for (int i = 0; i < probs.getSize(); i++) {
             CharData cd = probs.get(i);
-            cd.p = (double) cd.count / totalCount; 
-            cumulative += cd.p; 
+            cd.p = (double) cd.count / totalCount;
+            cumulative += cd.p;
             cd.cp = cumulative; 
-        }
-        
-        if (probs.getSize() > 0) {
-            probs.get(probs.getSize() - 1).cp = 1.0;
         }
     }
 
-    char getRandomChar(List probs) {
+    public char getRandomChar(List probs) {
         double r = randomGenerator.nextDouble(); 
         for (int i = 0; i < probs.getSize(); i++) {
-            CharData cd = probs.get(i);
-            if (r < cd.cp) { 
-                return cd.chr; 
+            if (r < probs.get(i).cp) {
+                return probs.get(i).chr;
             }
         }
         return probs.get(probs.getSize() - 1).chr;
     }
-
     public String generate(String initialText, int textLength) {
         if (initialText.length() < windowLength) {
             return initialText;
