@@ -61,15 +61,18 @@ public class List {
     }
 
     /** Updates the counter or adds a new character. [cite: 98, 99] */
+    /** Updates the counter or adds a new character. */
     public void update(char chr) {
-        int index = indexOf(chr);
-        if (index != -1) {
-            CharData cd = get(index);
-            cd.count++;
-        } else {
-            addFirst(chr); 
+    Node current = first;
+    while (current != null) {
+        if (current.cp.chr == chr) {
+            current.cp.count++; 
+            return; 
         }
+        current = current.next;
     }
+    addFirst(chr);
+}
 
     /** Removes the CharData object with the given chr. [cite: 93] */
     public boolean remove(char chr) {
