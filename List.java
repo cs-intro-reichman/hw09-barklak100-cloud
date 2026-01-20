@@ -1,7 +1,7 @@
 /** A linked list of character data objects. */
 public class List {
 
-    // Points to the first node in this list [cite: 45]
+    // Points to the first node in this list
     private Node first;
 
     // The number of elements in this list
@@ -23,10 +23,10 @@ public class List {
         if (first == null) {
             return null;
         }
-        return first.cp; // תיקון: value במקום cp
+        return first.cp; 
     }
 
-    /** Adds a CharData object with the given character to the beginning of this list. [cite: 89] */
+    /** Adds a CharData object with the given character to the beginning of this list. */
     public void addFirst(char chr) {
         CharData newCharData = new CharData(chr);
         Node newNode = new Node(newCharData, first);
@@ -34,19 +34,20 @@ public class List {
         size++; 
     }
 
-    /** Textual representation of this list. [cite: 90] */
+    /** Textual representation of this list. */
     public String toString() {
         if (size == 0) return "()";
-        String result = "(";
+        StringBuilder result = new StringBuilder("(");
         Node current = first;
         while (current != null) {
-            result += current.cp.toString() + " "; 
+            result.append(current.cp.toString()).append(" "); 
             current = current.next;
         }
-        return result.trim() + ")";
+        // הסרת הרווח האחרון וסגירה
+        return result.toString().trim() + ")";
     }
 
-    /** Returns the index of the first CharData object in this list that has the same chr value. [cite: 87] */
+    /** Returns the index of the first CharData object in this list that has the same chr value. */
     public int indexOf(char chr) {
         int index = 0;
         Node current = first;
@@ -60,24 +61,39 @@ public class List {
         return -1;
     }
 
-    /** Updates the counter or adds a new character. [cite: 98, 99] */
     /** Updates the counter or adds a new character. */
     public void update(char chr) {
-    Node current = first;
-    while (current != null) {
-        if (current.cp.chr == chr) {
-            current.cp.count++; 
-            return; 
+        Node current = first;
+        // חיפוש התו ברשימה
+        while (current != null) {
+            if (current.cp.chr == chr) {
+                // אם נמצא - מעדכנים מונה ועוצרים
+                current.cp.count++; 
+                return; 
+            }
+            current = current.next;
         }
-        current = current.next;
+        // אם לא נמצא - מוסיפים חדש להתחלה
+        addFirst(chr);
     }
-    addFirst(chr);
-}
 
-    /** Removes the CharData object with the given chr. [cite: 93] */
+    /** Returns the CharData object at the specified index. */
+    public CharData get(int index) {
+        if (index < 0 || index >= size) { 
+            throw new IndexOutOfBoundsException();
+        }
+        Node current = first;
+        for (int i = 0; i < index; i++) {
+            current = current.next;
+        }
+        return current.cp; 
+    }
+
+    /** Removes the CharData object with the given chr. */
     public boolean remove(char chr) {
         if (first == null) return false;
 
+        // מקרה מיוחד: התו נמצא בצומת הראשון
         if (first.cp.chr == chr) { 
             first = first.next;
             size--; 
@@ -98,18 +114,6 @@ public class List {
         return false; 
     }
 
-    /** Returns the CharData object at the specified index. [cite: 95] */
-    public CharData get(int index) {
-        if (index < 0 || index >= size) { 
-            throw new IndexOutOfBoundsException();
-        }
-        Node current = first;
-        for (int i = 0; i < index; i++) {
-            current = current.next;
-        }
-        return current.cp; 
-    }
-
     /** Returns an array of CharData objects. */
     public CharData[] toArray() {
         CharData[] arr = new CharData[size];
@@ -122,7 +126,7 @@ public class List {
         return arr;
     }
 
-    /** Returns an iterator starting at the given index. [cite: 97] */
+    /** Returns an iterator starting at the given index. */
     public ListIterator listIterator(int index) {
         if (index < 0 || index > size) return null; 
         Node current = first;

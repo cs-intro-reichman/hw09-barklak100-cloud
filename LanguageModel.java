@@ -31,27 +31,33 @@ public class LanguageModel {
         CharDataMap = new HashMap<String, List>();
     }
 
-  public void train(String fileName) {
-        In in = new In(fileName);
-        String fullText = in.readAll(); 
-
-        for (int i = 0; i <= fullText.length() - windowLength - 1; i++) {
-            String window = fullText.substring(i, i + windowLength);
-            char nextChar = fullText.charAt(i + windowLength);
-
-            List probs = CharDataMap.get(window);
-            if (probs == null) {
-                probs = new List();
-                CharDataMap.put(window, probs);
-            }
-            probs.update(nextChar);
-        }
-
-        for (List probs : CharDataMap.values()) {
-            calculateProbabilities(probs);
+ public void train(String fileName) {
+    In in = new In(fileName);
+    String window = "";
+    for (int i = 0; i < windowLength; i++) {
+        if (!in.isEmpty()) {
+            window += in.readChar();
         }
     }
 
+    while (!in.isEmpty()) {
+        char c = in.readChar();
+        
+        List probs = CharDataMap.get(window);
+        if (probs == null) {
+            probs = new List();
+            CharDataMap.put(window, probs);
+        }
+        
+        probs.update(c);
+        
+        window = window.substring(1) + c;
+    }
+
+    for (List probs : CharDataMap.values()) {
+        calculateProbabilities(probs);
+    }
+}
     void calculateProbabilities(List probs) {
         int totalCount = 0;
         for (int i = 0; i < probs.getSize(); i++) {
