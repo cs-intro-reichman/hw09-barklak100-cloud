@@ -40,10 +40,11 @@ public class LanguageModel {
             window += in.readChar();
         }
     }
+    
+    if (window.length() < windowLength) return;
 
     while (!in.isEmpty()) {
         char c = in.readChar(); 
-        
         List probs = CharDataMap.get(window);
 
         if (probs == null) {
@@ -52,7 +53,6 @@ public class LanguageModel {
         }
 
         probs.update(c);
-        
         window = window.substring(1) + c;
     }
 

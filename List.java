@@ -45,13 +45,13 @@ public class List {
         return -1;
     }
 
-  public void update(char chr) {
+ public void update(char chr) {
     Node current = first; 
     boolean found = false;
 
     while (current != null) {
         if (current.cp.chr == chr) { 
-            current.cp.count++;
+            current.cp.count++; 
             found = true;
             break; 
         }
