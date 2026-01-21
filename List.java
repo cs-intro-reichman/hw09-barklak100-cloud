@@ -53,7 +53,7 @@ public class List {
         if (current.cp.chr == chr) { 
             current.cp.count++; 
             found = true;
-            break; 
+            return; 
         }
         current = current.next;
     }
