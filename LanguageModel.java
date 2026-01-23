@@ -22,23 +22,22 @@ public class LanguageModel {
     public void train(String fileName) {
         In in = new In(fileName);
         String window = "";
+        char c;
         
-        // Reads characters until window reaches windowLength 
-        for (int i = 0; i < windowLength; i++) {
-            if (!in.isEmpty()) {
-                window += in.readChar();
+        for (int i = 0; i < this.windowLength; i++) {
+            c = in.readChar();
+                window += c;
             }
-        }
 
         while (!in.isEmpty()) {
-            char c = in.readChar(); 
+           c = in.readChar(); 
             List probs = CharDataMap.get(window); 
             if (probs == null) {
                 probs = new List();
-                CharDataMap.put(window, probs); 
+                this.CharDataMap.put(window, probs); 
             }
             probs.update(c); 
-            window = window.substring(1) + c; // Advances the window 
+            window = window.substring(1) + c; 
         }
 
         for (List probs : CharDataMap.values()) {
