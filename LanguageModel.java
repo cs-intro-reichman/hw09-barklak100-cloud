@@ -65,10 +65,9 @@ public class LanguageModel {
         arr[i].cp = cumulative; 
     }
     
-    if (arr.length > 0) {
         arr[arr.length - 1].cp = 1.0;
     }
-}
+
     public char getRandomChar(List probs) {
         double r = randomGenerator.nextDouble(); // Monte Carlo
         for (int i = 0; i < probs.getSize(); i++) {
@@ -77,7 +76,7 @@ public class LanguageModel {
         return probs.get(probs.getSize() - 1).chr;
     }
 
-    /** Generates random text as requested [cite: 206] */
+    /** Generates random text as requested  */
     public String generate(String initialText, int textLength) {
         if (initialText.length() < windowLength) {
             return initialText;
