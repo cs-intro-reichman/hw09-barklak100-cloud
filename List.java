@@ -1,4 +1,3 @@
-/** A linked list of CharData objects. */
 public class List {
     private Node first; 
     private int size;   
@@ -8,19 +7,8 @@ public class List {
         size = 0;
     }
 
-    public int getSize() {
+    public int size() {
         return size;
-    }
-
-    public CharData getFirst() {
-        if (first == null) return null;
-        return first.cp;
-    }
-
-    public void addFirst(char chr) {
-        CharData cd = new CharData(chr);
-        first = new Node(cd, first);
-        size++;
     }
 
     public CharData get(int index) {
@@ -31,55 +19,61 @@ public class List {
         for (int i = 0; i < index; i++) {
             current = current.next;
         }
-        return current.cp; // שם השדה הוא cp לפי הארכיטקטורה [cite: 46-51]
+        return current.cp; 
+    }
+
+    public void addFirst(char chr) {
+        CharData newData = new CharData(chr);
+        first = new Node(newData, first);
+        size++;
     }
 
     public int indexOf(char chr) {
         Node current = first;
         int index = 0;
         while (current != null) {
-            if (current.cp.chr == chr) return index;
+            if (current.cp.chr == chr) return index; 
             current = current.next;
             index++;
         }
         return -1;
     }
 
- public void update(char chr) {
-    Node current = first; 
-    boolean found = false;
-
-    while (current != null) {
-        if (current.cp.chr == chr) { 
-            current.cp.count++; 
-            found = true;
-            return; 
+    public void update(char chr) {
+        int index = indexOf(chr);
+        if (index != -1) {
+            get(index).count++;
+        } else {
+            addFirst(chr);
         }
-        current = current.next;
     }
-
-    if (!found) {
-        addFirst(chr); 
-    }
-}
 
     public boolean remove(char chr) {
         Node prev = null;
         Node current = first;
-        while (current != null) {
-            if (current.cp.chr == chr) {
-                if (prev == null) {
-                    first = first.next;
-                } else {
-                    prev.next = current.next;
-                }
-                size--;
-                return true;
-            }
+        while (current != null && current.cp.chr != chr) { 
             prev = current;
             current = current.next;
         }
-        return false;
+        if (current == null) return false;
+        if (prev == null) {
+            first = first.next;
+        } else {
+            prev.next = current.next;
+        }
+        size--;
+        return true;
+    }
+
+    public ListIterator listIterator(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node current = first;
+        for (int i = 0; i < index; i++) {
+            current = current.next;
+        }
+        return new ListIterator(current);
     }
 
     public String toString() {
@@ -87,8 +81,10 @@ public class List {
         StringBuilder sb = new StringBuilder("(");
         Node current = first;
         while (current != null) {
-            sb.append(current.cp.toString()); 
-            if (current.next != null) sb.append(" ");
+            sb.append(current.cp.toString());
+            if (current.next != null) {
+                sb.append(" ");
+            }
             current = current.next;
         }
         sb.append(")");
