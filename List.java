@@ -49,12 +49,16 @@ public class List {
     }
 
     public void update(char chr) {
-        int index = indexOf(chr);
-        if (index != -1) {
-            get(index).count++; 
-        } else {
-            addFirst(chr); 
+        Node newfirst = this.first;
+        while (newfirst != null) {
+            if (newfirst.cp.chr == chr) {
+                newfirst.cp.count++;
+                return;
+                
+            }
+            newfirst = newfirst.next;  
         }
+        addFirst(chr);
     }
 
     public boolean remove(char chr) {
