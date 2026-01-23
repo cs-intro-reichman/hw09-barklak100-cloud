@@ -45,20 +45,30 @@ public class LanguageModel {
         }
     }
 
-    public void calculateProbabilities(List probs) {
-        int total = 0;
-        for (int i = 0; i < probs.getSize(); i++) {
-            total += probs.get(i).count; // Summing total count
-        }
-        double cumulative = 0;
-        for (int i = 0; i < probs.getSize(); i++) {
-            CharData cd = probs.get(i);
-            cd.p = (double) cd.count / total; // Computing individual probability 
-            cumulative += cd.p;
-            cd.cp = cumulative; // Setting cumulative probability 
-        }
+   public void calculateProbabilities(List probs) {
+    if (probs.getSize() == 0) {
+        return; 
+    } 
+
+    CharData[] arr = probs.toArray();
+    
+    int total = 0;
+    for (int i = 0; i < arr.length; i++) {
+        total += arr[i].count; 
     }
 
+    double cumulative = 0;
+    for (int i = 0; i < arr.length; i++) {
+        arr[i].p = (double) arr[i].count / total;
+        CharData cd = probs.get(i);
+        cumulative += arr[i].p;
+        arr[i].cp = cumulative; 
+    }
+    
+    if (arr.length > 0) {
+        arr[arr.length - 1].cp = 1.0;
+    }
+}
     public char getRandomChar(List probs) {
         double r = randomGenerator.nextDouble(); // Monte Carlo
         for (int i = 0; i < probs.getSize(); i++) {
