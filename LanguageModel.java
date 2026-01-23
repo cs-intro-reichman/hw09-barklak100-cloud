@@ -21,9 +21,11 @@ public class LanguageModel {
     public void train(String fileName) {
         String window = "";
         In in = new In(fileName);
+        // בניית החלון הראשוני [cite: 380-381]
         for (int i = 0; i < windowLength; i++) {
             if (!in.isEmpty()) window += in.readChar();
         }
+        // עיבוד שאר הקובץ [cite: 382]
         while (!in.isEmpty()) {
             char c = in.readChar();
             List probs = CharDataMap.get(window);
@@ -32,14 +34,15 @@ public class LanguageModel {
                 CharDataMap.put(window, probs);
             }
             probs.update(c);
-            window = window.substring(1) + c;
+            window = window.substring(1) + c; // הזזת החלון [cite: 398]
         }
+        // השלב שמתקן את ה-Train: חישוב הסתברויות לכל הרשימות במפה 
         for (List probs : CharDataMap.values()) {
             calculateProbabilities(probs);
         }
     }
 
-    public void calculateProbabilities(List probs) {
+    void calculateProbabilities(List probs) {
         int totalCount = 0;
         for (int i = 0; i < probs.getSize(); i++) {
             totalCount += probs.get(i).count;
@@ -51,9 +54,12 @@ public class LanguageModel {
             cumulative += cd.p;
             cd.cp = cumulative;
         }
+        if (probs.getSize() > 0) { // תיקון לדיוק הסתברות מצטברת [cite: 119]
+            probs.get(probs.getSize() - 1).cp = 1.0;
+        }
     }
 
-    public char getRandomChar(List probs) {
+    char getRandomChar(List probs) {
         double r = randomGenerator.nextDouble();
         for (int i = 0; i < probs.getSize(); i++) {
             if (r < probs.get(i).cp) return probs.get(i).chr;
@@ -61,6 +67,7 @@ public class LanguageModel {
         return probs.get(probs.getSize() - 1).chr;
     }
 
+    // הלוגיקה שלך שעבדה מצוין
     public String generate(String initialText, int textLength) {
         if (initialText.length() < windowLength) return initialText;
         String generatedText = initialText;
